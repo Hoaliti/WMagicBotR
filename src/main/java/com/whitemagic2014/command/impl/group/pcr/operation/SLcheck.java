@@ -21,7 +21,7 @@ public class SLcheck extends PcrNoAuthCommand {
 
     @Override
     public CommandProperties properties() {
-        return new CommandProperties("sl？", "sl?");
+        return new CommandProperties("查询sl", "查看sl");
     }
 
     @Override

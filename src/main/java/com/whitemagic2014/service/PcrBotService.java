@@ -200,6 +200,10 @@ public interface PcrBotService {
     PrivateModel<String> orderBoss(Long gid, Long uid, Integer bossNum);
 
 
+
+    PrivateModel<Map<String, String>> remindBoss(Long gid, int bossNum);
+
+
     /**
      * @Name: cancelOrder
      * @Description: 取消预约boss

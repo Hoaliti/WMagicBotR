@@ -26,7 +26,7 @@ public class CheckOrder extends PcrNoAuthCommand {
 
     @Override
     public CommandProperties properties() {
-        return new CommandProperties("查预约", "查预定");
+        return new CommandProperties("查看预约", "查询预约");
     }
 
     @Override

@@ -33,6 +33,27 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
+        <!--jsoup是用来解析HTML的工具-->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+
+        <!--google处理图片的工具-->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.9</version>
+        </dependency>
+
+        <!--google用来json和对象相互转化工具-->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -127,6 +148,35 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>net.mamoe</groupId>
+            <artifactId>mirai-core-jvm</artifactId>
+            <version>2.1.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-stdlib</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.mamoe</groupId>
+            <artifactId>mirai-core-api-jvm</artifactId>
+            <version>2.1.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-stdlib</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
+        </dependency>
+
         <!-- 1.2.2 版本 mirai,我这边环境 会报kotlin-stdlib 包错误,排查了一下：
         上面2个 mirai 里面也做了依赖冲突的解决,但是本项目跑起来还是会报错,无奈只能排除mirai下的默认引入,自己引入下包 -->
         <dependency>
@@ -135,6 +185,7 @@
             <version>1.4.0</version>
             <scope>compile</scope>
         </dependency>
+
         <!--    mirai end    -->
 
     </dependencies>

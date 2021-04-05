@@ -408,6 +408,38 @@ public class PcrBotServiceImpl implements PcrBotService {
     }
 
     @Override
+    public PrivateModel<Map<String, String>> remindBoss(Long gid, int bossNum) {
+
+        // 查工会在不在
+        PrivateModel<Guild> gexist = checkGuildExist(gid);
+        if (!gexist.isSuccess()) {
+            return new PrivateModel<Map<String, String>>().wrapper(gexist);
+        }
+
+        //挂树和预约通知 需要@的人
+        Notice order = new Notice();
+        order.setGid(gid);
+        order.setType(PcrNoticeType.order);
+        order.setBossNum(bossNum);
+        List<Notice> onOrder = pcrDao.findNoticeByConditions(order);
+
+        // 当通知触发后需要删除通知
+        pcrDao.deleteNotice(order);
+
+
+        Map<String, List<Long>> ats = new HashMap<>();
+        if (!onOrder.isEmpty()) {
+            ats.put(PcrNoticeType.order.name(), onOrder.stream().map(Notice::getUid).collect(Collectors.toList()));
+        }
+
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put(PcrNoticeType.order.name(), "您预约的boss已经出现,可以出刀了");
+        return new PrivateModel<>(ReturnCode.SUCCESS,
+                "success", ats,
+                resultMap);
+    }
+
+    @Override
     public PrivateModel<List<String>> getKnifeDate(Long gid) {
         List<String> dates = pcrDao.findBattleDateByGid(gid);
         if (dates.isEmpty()){
