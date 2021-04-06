@@ -294,6 +294,7 @@ public interface PcrDao {
      **/
     int addNotice(Notice notice);
 
+
     /**
      * @Name: deleteNotice
      * @Description: 动态条件组合 删除通知

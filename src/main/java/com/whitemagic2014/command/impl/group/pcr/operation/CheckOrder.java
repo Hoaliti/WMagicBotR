@@ -42,7 +42,7 @@ public class CheckOrder extends PcrNoAuthCommand {
         for (Integer num : dataMap.keySet()) {
             msg = msg.plus(num + "号boss:\n");
             List<Long> uids = dataMap.get(num).stream().map(Notice::getUid).collect(Collectors.toList());
-            msg = msg.plus(makeAts(uids, subject)).plus("\n");
+            msg = msg.plus(makeList(uids, subject)).plus("\n");
         }
         return msg;
     }

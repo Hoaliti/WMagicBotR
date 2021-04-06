@@ -3,6 +3,7 @@ package com.whitemagic2014.pojo.setu;
 import lombok.Getter;
 import lombok.Setter;
 import net.mamoe.mirai.contact.Contact;
+import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.contact.User;
 
 import java.util.List;
@@ -99,5 +100,5 @@ public class PixivImageInfo {
      * 请求来源的qq
      * 用于判断配置和开关
      */
-    private User sender;
+    private Member sender;
 }

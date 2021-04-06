@@ -24,6 +24,9 @@ public class User {
     // 当天是否sl 每日一次
     Boolean sl;
 
+    // 当天出刀书
+    int knifes;
+
     public void setUid(Long uid) {
         this.uid = uid;
     }
@@ -62,6 +65,14 @@ public class User {
 
     public Boolean getSl() {
         return sl;
+    }
+
+    public int getKnifes() {
+        return knifes;
+    }
+
+    public void setKnifes(int knifes) {
+        this.knifes = knifes;
     }
 }
 

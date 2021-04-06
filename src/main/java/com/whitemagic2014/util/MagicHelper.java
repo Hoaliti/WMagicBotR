@@ -57,6 +57,33 @@ public class MagicHelper {
 
     /**
      * @Name: pcrToday
+     * @Description: 获得pcr时制的 今天
+     * @Param:
+     * @Return: java.util.Date
+     * @Author: magic chen
+     * @Date: 2020/8/24 16:23
+     **/
+    private static boolean pcrTimeCheck() {
+        // 现在时间 比如 2020-08-24 16:18:12
+        Date now = new Date();
+        if(now.getHours()==17){
+            if(now.getMinutes()<=51){
+               if(now.getSeconds()<=30) {
+                   return true;
+               }
+            }
+        }
+        return false;
+    }
+
+    public static Date pcrTimeGet() {
+        // 现在时间 比如 2020-08-24 16:18:12
+        Date now = new Date();
+        return now;
+    }
+
+    /**
+     * @Name: pcrToday
      * @Description: 获得pcr时间制度的今天
      * @Param:
      * @Return: yyyy-MM-dd
@@ -78,6 +105,18 @@ public class MagicHelper {
     public static String pcrYesterday() {
         Date yes = DateFormatUtil.dateMinus(pcrTodayInternal(), 1L, TimeUnit.DAYS);
         return DateFormatUtil.sdfv2.format(yes);
+    }
+
+    /**
+     * @Name: pcrYesterday
+     * @Description: 获得pcr时间制度的昨天
+     * @Param:
+     * @Return: yyyy-MM-dd
+     * @Author: magic chen
+     * @Date: 2020/8/24 16:26
+     **/
+    public static boolean pcrTime() {
+        return pcrTimeCheck();
     }
 
     /**

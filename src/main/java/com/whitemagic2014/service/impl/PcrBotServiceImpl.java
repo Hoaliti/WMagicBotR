@@ -131,6 +131,34 @@ public class PcrBotServiceImpl implements PcrBotService {
     }
 
     @Override
+    public PrivateModel<String> startGuildFight(Long gid) {
+
+        // 检查工会是否存在
+        PrivateModel<Guild> checkguild = checkGuildExist(gid);
+        if (!checkguild.isSuccess()) {
+            return new PrivateModel<String>().wrapper(checkguild);
+        }
+
+        // 删公会下通知
+        Notice notice = new Notice();
+        notice.setGid(gid);
+        pcrDao.deleteNotice(notice);
+        // 删公会下boss
+        pcrDao.deleteBossByGid(gid);
+        // 删公会下出刀记录
+        pcrDao.deleteBattleByGid(gid);
+
+
+        User reset = new User();
+        reset.setSl(false);
+        reset.setGid(gid);
+        pcrDao.updateUserByGid(reset);
+        return new PrivateModel<>(ReturnCode.SUCCESS,
+                "success",
+                "日替成功");
+    }
+
+    @Override
     public PrivateModel<String> addMemer(Long gid, Long uid, String uname, MemberPermission permission) {
         // 检查工会是否存在
         PrivateModel<Guild> checkguild = checkGuildExist(gid);
@@ -230,42 +258,11 @@ public class PcrBotServiceImpl implements PcrBotService {
             return new PrivateModel<>(ReturnCode.FAIL, "[" + user.getUname() + "] " +
                     daystr + "三刀已经出完,请不要重复报刀");
         }
-        Boss bossActive = pcrDao.findBossActiveByGid(gid);
-        // 检查血量是否应该报尾刀
-        if (bossActive.getHpnow() < damage) {
-            return new PrivateModel<>(ReturnCode.FAIL, "伤害超出剩余血量，如击败请使用尾刀");
-        }
-        Boss bossUpdate = new Boss();
-        bossUpdate.setId(bossActive.getId());
-        // 目前剩余
-        Long remainHp = bossActive.getHpnow() - damage;
-        // 更新boss血量
-        bossUpdate.setHpnow(remainHp);
-        pcrDao.updateBoss(bossUpdate);
 
-
-        // 记录出刀记录
-        Battle battle = new Battle();
-        battle.setBossid(bossActive.getId());
-        battle.setUid(uid);
-        battle.setUname(user.getUname());
-        battle.setGid(gid);
-        battle.setDamage(damage);
-        battle.setTime(pcrDay);
-        battle.setKillboss(false);
-
-        String knife;
         int knifeNumNotice;
-        if (lastKnife != null && lastKnife.getType().isEnd()) {
-            knife = "补偿刀";
-            battle.setType(BattleType.extra);
-            knifeNumNotice = knifeNum;
-        } else {
-            knife = "完整刀";
-            battle.setType(BattleType.nomal);
-            knifeNumNotice = knifeNum + 1;
-        }
-        pcrDao.addBattle(battle);
+
+        knifeNumNotice = knifeNum + 1;
+
 
         // 该用户出刀后删除申请出刀的锁定
         if (MagicMaps.check(BossLock.getLockname(gid))) {
@@ -275,10 +272,47 @@ public class PcrBotServiceImpl implements PcrBotService {
             }
         }
 
-        String result = "[" + user.getUname() + "]对boss造成了" + MagicHelper.longAddComma(damage) + "点伤害\n" +
-                "（" + daystr + "第" + knifeNumNotice + "刀," + knife + "）\n" +
-                "现在" + bossActive.getCycle() + "周目," + bossActive.getNum() + "号boss\n" +
-                "生命值" + MagicHelper.longAddComma(remainHp);
+        String result = "[" + user.getUname() + "]" +
+                "出了(" + daystr + "第" + knifeNumNotice + "刀)";
+        return new PrivateModel<>(ReturnCode.SUCCESS,
+                "success",
+                result);
+    }
+
+    @Override
+    public PrivateModel<String> baoKnife(Long gid, Long uid) {
+
+        // 查工会在不在
+        PrivateModel<Guild> gexist = checkGuildExist(gid);
+        if (!gexist.isSuccess()) {
+            return new PrivateModel<String>().wrapper(gexist);
+        }
+        // 查被报刀的人在不在
+        PrivateModel<User> uexist = checkUserExist(gid, uid);
+        if (!uexist.isSuccess()) {
+            return new PrivateModel<String>().wrapper(uexist);
+        }
+
+
+
+        User user = pcrDao.findUserByUid(gid, uid);
+
+        int knifeNum = user.getKnifes();
+
+
+        if (knifeNum >= 3) {
+            return new PrivateModel<>(ReturnCode.FAIL, "[" + user.getUname() + "] " + "三刀已经出完,请不要重复报刀");
+        }
+
+        int knifeNumNotice;
+
+        knifeNumNotice = knifeNum + 1;
+
+        user.setKnifes(knifeNumNotice);
+        pcrDao.updateUser(user);
+
+        String result = "[" + user.getUname() + "]" +
+                "出了(" + "第" + knifeNumNotice + "刀)";
         return new PrivateModel<>(ReturnCode.SUCCESS,
                 "success",
                 result);
@@ -422,10 +456,6 @@ public class PcrBotServiceImpl implements PcrBotService {
         order.setType(PcrNoticeType.order);
         order.setBossNum(bossNum);
         List<Notice> onOrder = pcrDao.findNoticeByConditions(order);
-
-        // 当通知触发后需要删除通知
-        pcrDao.deleteNotice(order);
-
 
         Map<String, List<Long>> ats = new HashMap<>();
         if (!onOrder.isEmpty()) {
@@ -663,6 +693,21 @@ public class PcrBotServiceImpl implements PcrBotService {
     }
 
     @Override
+    public PrivateModel<String> timeCheck(Long gid) {
+        if(MagicHelper.pcrTime()){
+            startGuildFight(gid);
+            return new PrivateModel<>(ReturnCode.SUCCESS,
+                    "success",
+                    "日替成功");
+        }else{
+            return new PrivateModel<>(ReturnCode.SUCCESS,
+                    "success",
+                    MagicHelper.pcrTimeGet().toString());
+        }
+
+    }
+
+    @Override
     public PrivateModel<String> orderBoss(Long gid, Long uid, Integer bossNum) {
 
         // 查工会在不在
@@ -681,9 +726,9 @@ public class PcrBotServiceImpl implements PcrBotService {
         condition.setGid(gid);
         condition.setType(PcrNoticeType.order);
         List<Notice> list = pcrDao.findNoticeByConditions(condition);
-        if (!list.isEmpty()) {
+        if (list.size()==3) {
             return new PrivateModel<>(ReturnCode.FAIL,
-                    "您已预约" + list.get(0).getBossNum() + "号boss,请不要重复多次预约");
+                    "您已预约" + list.get(0).getBossNum()+"," +list.get(1).getBossNum() + "," + list.get(2).getBossNum() + "号boss,请不要重复多次预约");
         }
         Notice order = new Notice();
         order.setGid(gid);
@@ -718,6 +763,28 @@ public class PcrBotServiceImpl implements PcrBotService {
         return new PrivateModel<>(ReturnCode.SUCCESS,
                 "success",
                 "您的预约已取消");
+    }
+
+    @Override
+    public PrivateModel<String> xiaban(Long gid, Long uid) {
+        // 查工会在不在
+        PrivateModel<Guild> gexist = checkGuildExist(gid);
+        if (!gexist.isSuccess()) {
+            return new PrivateModel<String>().wrapper(gexist);
+        }
+        // 查目标人员在不在
+        PrivateModel<User> uexist = checkUserExist(gid, uid);
+        if (!uexist.isSuccess()) {
+            return new PrivateModel<String>().wrapper(uexist);
+        }
+
+        Notice del = new Notice();
+        del.setGid(gid);
+        del.setUid(uid);
+        pcrDao.deleteNotice(del);
+        return new PrivateModel<>(ReturnCode.SUCCESS,
+                "success",
+                "已报三刀并取消所有预约,成功下班!");
     }
 
     @Override

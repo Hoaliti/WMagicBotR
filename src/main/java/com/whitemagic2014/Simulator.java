@@ -6,6 +6,7 @@ import com.whitemagic2014.config.properties.SwitchProperties;
 import com.whitemagic2014.db.DBInitHelper;
 import com.whitemagic2014.db.DBVersion;
 import com.whitemagic2014.events.CommandEvents;
+import com.whitemagic2014.events.MessageEvents;
 import com.whitemagic2014.service.Pcrjjc;
 import net.mamoe.mirai.event.ListenerHost;
 import org.slf4j.Logger;
@@ -68,6 +69,8 @@ public class Simulator implements ApplicationRunner {
         commandEvents.registerCommandHeads("#", "$", "!", "！", "");
         commandEvents.registerCommands(annotateAnalyzer.getCommands());
         events.add(commandEvents);
+
+
 
         // 启动bot
         MagicBotR.startBot(account, pwd, "deviceInfo.json", events, lognet);

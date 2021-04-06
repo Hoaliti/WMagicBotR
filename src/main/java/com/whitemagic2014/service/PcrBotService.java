@@ -52,6 +52,14 @@ public interface PcrBotService {
      **/
     PrivateModel<String> clearGuildData(Long gid);
 
+    /**
+     * @Name: startGuildFight
+     * @Description: 开始公会战
+     * @Param: gid
+     * @Return: com.whitemagic2014.vo.PrivateModel<java.lang.String>
+     **/
+    PrivateModel<String> startGuildFight(Long gid);
+
 
     /**
      * @Name: addMemer
@@ -101,6 +109,19 @@ public interface PcrBotService {
      * @Date: 2020/8/22 18:44
      **/
     PrivateModel<String> attackKnife(Long gid, Long uid, Long damage, Boolean yesterday);
+
+    /**
+     * @Name: attackKnife
+     * @Description: 出刀 必须刷新刀状态
+     * @Param: gid 群组
+     * @Param: uid 人员
+     * @Param: damage 伤害
+     * @Param: yesterday 是否报昨日刀
+     * @Return: com.whitemagic2014.vo.PrivateModel<java.lang.String>
+     * @Author: magic chen
+     * @Date: 2020/8/22 18:44
+     **/
+    PrivateModel<String> baoKnife(Long gid, Long uid);
 
     /**
      * @Name: endKnife
@@ -187,6 +208,9 @@ public interface PcrBotService {
     PrivateModel<String> sl(Long gid, Long uid, Boolean check);
 
 
+    PrivateModel<String> timeCheck(Long gid);
+
+
     /**
      * @Name: orderBoss
      * @Description: 预约boss
@@ -215,6 +239,15 @@ public interface PcrBotService {
      * @Date: 2020/8/23 12:06
      **/
     PrivateModel<String> cancelOrder(Long gid, Long uid, Integer num);
+
+
+    /**
+     * @Name: xiaban
+     * @Description: 取消所有预约 并报完所有的刀
+     * @Param: gid
+     * @Param: uid
+     **/
+    PrivateModel<String> xiaban(Long gid, Long uid);
 
     /**
      * @Name: hangOnTree

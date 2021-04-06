@@ -21,7 +21,7 @@ public class DelGuild extends PcrOwnerCommand {
 
     @Override
     public CommandProperties properties() {
-        return new CommandProperties("人生有梦各自精彩");
+        return new CommandProperties("删除公会");
     }
 
     @Override

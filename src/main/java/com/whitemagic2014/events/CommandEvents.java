@@ -2,7 +2,11 @@ package com.whitemagic2014.events;
 
 import com.whitemagic2014.command.*;
 import com.whitemagic2014.annotate.Switch;
+import com.whitemagic2014.constant.ConstantRepeater;
+import com.whitemagic2014.service.KeyWordService;
 import com.whitemagic2014.util.MagicSwitch;
+import com.whitemagic2014.util.RandomUtil;
+import com.whitemagic2014.util.StringUtil;
 import kotlin.coroutines.CoroutineContext;
 import net.mamoe.mirai.event.EventHandler;
 import net.mamoe.mirai.event.Listener;
@@ -17,7 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,6 +35,9 @@ import java.util.stream.Collectors;
 public class CommandEvents extends SimpleListenerHost {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandEvents.class);
+
+    @Autowired
+    private KeyWordService keyWordService;
 
 
     /**
@@ -193,7 +202,8 @@ public class CommandEvents extends SimpleListenerHost {
                 // 单纯的带有指令头的消息 未注册的指令
             }
         } else {
-            // 非指令 暂时不处理
+
+
         }
         return ListeningStatus.LISTENING; // 表示继续监听事件
     }
@@ -245,7 +255,11 @@ public class CommandEvents extends SimpleListenerHost {
     @NotNull
     @EventHandler(priority = Listener.EventPriority.NORMAL)
     public ListeningStatus onGroupMessage(@NotNull GroupMessageEvent event) throws Exception {
+
+
         String oriMsg = event.getMessage().contentToString();
+
+
         if (isCommand(oriMsg)) {
             GroupCommand command = (GroupCommand) getCommand(oriMsg, groupCommands);
             if (command != null) {
@@ -261,11 +275,64 @@ public class CommandEvents extends SimpleListenerHost {
                 event.intercept();
             } else {
                 // 单纯的带有指令头的消息 未注册的指令
+                groupRepeater(event);
+
             }
         } else {
-            // 非指令 暂时不处理
+            groupRepeater(event);
         }
         return ListeningStatus.LISTENING;
+    }
+
+    //保存群最后一条消息，用于复读
+    private static Map<Long, String[]> LAST_MSG_MAP = new HashMap<>();
+
+    /**
+     * 群复读
+     *
+     * @param event 群消息监控
+     * @return bol值 表示有没有进行群复读
+     */
+    private boolean groupRepeater(GroupMessageEvent event) {
+        //接收到的群消息
+        String groupMsg = event.getMessage().contentToString();
+        if ("[图片]".equalsIgnoreCase(groupMsg)) {
+            return false;
+        }
+        Long groupId = event.getGroup().getId();
+
+        //第一次消息初始化
+        if (!LAST_MSG_MAP.containsKey(groupId)) {
+            LAST_MSG_MAP.put(groupId, new String[2]);
+        }
+
+        String[] msgs = LAST_MSG_MAP.get(groupId);
+        //群复读，三个相同的消息，复读一次，并重置计数
+        if ((StringUtil.isEmpty(msgs[0]) || StringUtil.isEmpty(msgs[1]))
+                || !(msgs[0].equals(msgs[1]) && msgs[0].equals(groupMsg))) {
+            //刷新消息列表
+            msgs[1] = msgs[0];
+            msgs[0] = groupMsg;
+            LAST_MSG_MAP.put(groupId, msgs);
+            return false;
+        }
+
+        //概率复读
+        if (!RandomUtil.rollBoolean(20)) {
+            return false;
+        }
+
+        //概率打断复读，100%对复读打断复读的语句做出反应
+        if (RandomUtil.rollBoolean(-80)) {
+            //打断复读
+            groupMsg = RandomUtil.rollStrFromList(ConstantRepeater.REPEATER_KILLER_LIST);
+        }
+
+        //正常复读
+        event.getSubject().sendMessage(groupMsg);
+        //复读一次后，重置复读计数
+        LAST_MSG_MAP.put(groupId, new String[2]);
+        return true;
     }
 
 

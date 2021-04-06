@@ -2,6 +2,7 @@ package com.whitemagic2014.command.impl.group.funny;
 
 import com.whitemagic2014.annotate.Command;
 import com.whitemagic2014.command.EverywhereCommand;
+import com.whitemagic2014.command.impl.group.NoAuthCommand;
 import com.whitemagic2014.constant.ConstantPixiv;
 import com.whitemagic2014.pojo.CommandProperties;
 import com.whitemagic2014.pojo.ReString;
@@ -9,6 +10,8 @@ import com.whitemagic2014.pojo.setu.PixivImageInfo;
 import com.whitemagic2014.service.PixivService;
 import com.whitemagic2014.service.SetuService;
 import net.mamoe.mirai.contact.Contact;
+import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageChain;
@@ -29,7 +32,7 @@ import java.util.ArrayList;
  * 来点色图
  */
 @Command
-public class SetuCommand implements EverywhereCommand {
+public class SetuCommand extends NoAuthCommand {
     private static final Logger logger = LoggerFactory.getLogger(SetuCommand.class);
 
     @Autowired
@@ -44,7 +47,7 @@ public class SetuCommand implements EverywhereCommand {
     }
 
     @Override
-    public Message execute(User sender, ArrayList<String> args, MessageChain messageChain, Contact subject) {
+    public Message executeHandle(Member sender, ArrayList<String> args, MessageChain messageChain, Group subject) {
 
 
         Long userId = sender.getId();

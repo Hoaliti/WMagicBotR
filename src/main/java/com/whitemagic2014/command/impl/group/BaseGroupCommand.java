@@ -135,4 +135,21 @@ public abstract class BaseGroupCommand implements GroupCommand {
         return chain;
     }
 
+    /**
+     * @Name: makeAts
+     * @Description: 组成at消息链
+     * @Param: uids  用户qq号
+     * @Param: subject
+     * @Return: net.mamoe.mirai.message.data.MessageChain
+     * @Author: magic chen
+     * @Date: 2020/8/24 21:32
+     **/
+    protected MessageChain makeList(List<Long> uids, Group subject) {
+        MessageChain chain = MessageUtils.newChain();
+        for (Long uid : uids) {
+            chain = chain.plus("["+subject.get(uid).getNameCard()+"]");
+        }
+        return chain;
+    }
+
 }

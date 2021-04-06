@@ -97,6 +97,7 @@ public class SqlLiteConfig {
         sql_0_0_4.add("CREATE TABLE \"pcr_user\" (\n" +
                 " \"uid\" INTEGER,\n" +
                 " \"uname\" TEXT(64),\n" +
+                 " \"knifes\" INTEGER,\n" +
                 " \"role\" TEXT(8),\n" +
                 " \"gid\" INTEGER,\n" +
                 " \"sl\" INTEGER\n"+

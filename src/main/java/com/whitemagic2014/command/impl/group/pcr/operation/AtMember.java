@@ -41,10 +41,13 @@ public class AtMember extends PcrNoAuthCommand {
             }
             result = pcrBotService.remindBoss(subject.getId(),bossNum);
             Map<String, List<Long>> ats = result.getAts();
+
             if (ats.containsKey(PcrNoticeType.order.name())) {
                 Message order = makeAts(ats.get(PcrNoticeType.order.name()), subject)
                         .plus("\n" + result.getReturnObject().get(PcrNoticeType.order.name()));
                 subject.sendMessage(order);
+            }else{
+                return new At(sender).plus("暂时没有人预约该boss");
             }
             return null;
         } catch (Exception e) {

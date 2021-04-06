@@ -21,6 +21,9 @@
             <if test="sl != null">
                 sl,
             </if>
+            <if test="knifes != null">
+                knifes,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="uid != null">
@@ -37,6 +40,9 @@
             </if>
             <if test="sl != null">
                 #{sl},
+            </if>
+            <if test="knifes != null">
+                #{knifes},
             </if>
         </trim>
     </insert>
@@ -63,6 +69,9 @@
             <if test="sl != null">
                 sl = #{sl},
             </if>
+            <if test="knifes != null">
+                knifes = #{knifes},
+            </if>
         </set>
         where uid = #{uid} and gid = #{gid}
     </update>
@@ -78,6 +87,9 @@
             </if>
             <if test="sl != null">
                 sl = #{sl},
+            </if>
+            <if test="knifes != null">
+                knifes = #{knifes},
             </if>
         </set>
         where gid = #{gid}
@@ -161,6 +173,10 @@
         where gid = #{gid}
             and (cycle > #{cycle} or (cycle = #{cycle} and num >= #{num}))
     </delete>
+
+    <select id="checkUser" resultType="com.whitemagic2014.pojo.pcr.User">
+        select * FROM `pcr_user` where uid = #{uid} and gid = #{gid}
+    </select>
 
 
     <update id="updateBoss" parameterType="com.whitemagic2014.pojo.pcr.Boss">
@@ -314,7 +330,7 @@
 
 
     <select id="checkKnifeNum" resultType="java.lang.Integer">
-        select count(1) from pcr_battle
+        select count(*) from pcr_battle
             where gid = #{gid}
             and uid = #{uid}
             and `time` = #{time}
@@ -353,6 +369,7 @@
             </if>
         </trim>
     </insert>
+
 
 
     <delete id="deleteNotice" parameterType="com.whitemagic2014.pojo.pcr.Notice">
