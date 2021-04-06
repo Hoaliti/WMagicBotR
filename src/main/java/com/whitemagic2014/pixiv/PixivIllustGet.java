@@ -47,10 +47,8 @@ public class PixivIllustGet extends BaseRequest {
      */
     public void doRequest() throws IOException {
         if (null == pixivId) return;
-        //代理
-        Proxy proxy = HttpUtil.getProxy();
         //获取pid图片详情信息
-        byte[] resultBytes = HttpsUtil.doGet(URL + pixivId, proxy);
+        byte[] resultBytes = HttpsUtil.doGet(URL + pixivId);
         body = new String(resultBytes);
         //使用jsoup解析html
         Document document = Jsoup.parse(body);

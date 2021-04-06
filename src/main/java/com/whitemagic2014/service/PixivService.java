@@ -54,6 +54,8 @@ public class PixivService {
     //pixiv登录post链接
     private static final String PIXIV_LOGIN_POST_URL = "https://accounts.pixiv.net/api/login?lang=zh";
 
+    public static final String LOLICON = "https://api.lolicon.app/setu/?apikey=705545485e92e380931b56";
+
     @Autowired
     private ImageService imageService;
     @Autowired
@@ -76,6 +78,7 @@ public class PixivService {
         request.doRequest();
         return request.getPixivImageInfo();
     }
+
 
     /**
      * 根据标签，搜索出一张图片
@@ -234,10 +237,21 @@ public class PixivService {
         MessageChain result = MessageUtils.newChain();
 
         //r18过滤
-        boolean showImage = false;
-
-
+        boolean showImage;
+        showImage = (imageInfo.getXRestrict()!=null &&imageInfo.getXRestrict()==1);
         StringBuilder resultStr = new StringBuilder();
+        //展示图片
+        if (!showImage) {
+            parseImages(imageInfo);
+            List<Image> miraiImageList = rabbitBotService.uploadMiraiImage(imageInfo.getLocalImgPathList());
+            result = rabbitBotService.parseMsgChainByImgs(miraiImageList);
+        }else{
+            resultStr.append("R18 WARNING,无法发出,想看请私聊户户");
+            return result;
+        }
+
+
+
         if (1 < imageInfo.getPageCount()) {
             resultStr.append("\n该Pid包含多张图片");
         }
@@ -247,7 +261,6 @@ public class PixivService {
         resultStr.append("\n[P站id] ").append(imageInfo.getId());
         resultStr.append("\n[标题] ").append(imageInfo.getTitle());
         resultStr.append("\n[作者] ").append(imageInfo.getUserName());
-        resultStr.append("\n[上传时间] ").append(imageInfo.getCreateDate());
         result = result.plus(resultStr.toString());
         return result;
     }
@@ -474,9 +487,7 @@ public class PixivService {
             url = url.replace("i-cf.pximg.net", "i.pximg.net");
         }
         header.put("referer", "https://www.pixiv.net/artworks/" + pixivId);
-        // 创建代理
-        Proxy proxy = HttpUtil.getProxy();
         //下载图片
-        return ImageUtil.downloadImage(header, url, ConstantImage.DEFAULT_IMAGE_SAVE_PATH + File.separator + "pixiv", null, proxy);
+        return ImageUtil.downloadImage(header, url, ConstantImage.DEFAULT_IMAGE_SAVE_PATH + File.separator + "pixiv", null);
     }
 }

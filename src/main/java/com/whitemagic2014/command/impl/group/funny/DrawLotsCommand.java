@@ -53,7 +53,8 @@ public class DrawLotsCommand extends NoAuthCommand {
             String imageName = randNum + ".png";
             Image miraiImage = rabbitBotService.uploadMiraiImage(IMAGE_DRAWLOTS_SAVE_PATH + File.separator + imageName);
             //拼接请求人信息
-            result = result.plus("[" + userNick + "]\n");
+            At member = new At(sender);
+            result = result.plus(member);
             //拼接图片
             MessageChain imageMsg = rabbitBotService.parseMsgChainByImg(miraiImage);
             result = result.plus(imageMsg);

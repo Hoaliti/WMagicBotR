@@ -13,6 +13,7 @@ import net.mamoe.mirai.contact.Contact;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.contact.User;
+import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.PlainText;
@@ -63,7 +64,9 @@ public class SetuCommand extends NoAuthCommand {
         ConstantPixiv.SETU_PID_SPLIT_MAP.put(sender.getId(), System.currentTimeMillis());
 
         try {
-            //来张色图
+
+
+
             PixivImageInfo pixivImageInfo = setuService.getSetu();
             pixivImageInfo.setSender(sender);
             pixivImageInfo.setSubject(subject);
@@ -73,10 +76,10 @@ public class SetuCommand extends NoAuthCommand {
             return new PlainText(ConstantPixiv.PIXIV_IMAGE_DELETE);
         } catch (SocketTimeoutException stockTimeoutEx) {
             logger.warn(ConstantPixiv.PIXIV_IMAGE_TIMEOUT + stockTimeoutEx.toString(), stockTimeoutEx);
-            return new PlainText(ConstantPixiv.PIXIV_IMAGE_TIMEOUT);
+            return new PlainText("色图获取超时, 请加户户好友获取更多色图");
         } catch (Exception ex) {
-            logger.error(ConstantPixiv.PIXIV_ID_GET_ERROR_GROUP_MESSAGE + ex.toString(), ex);
-            return new PlainText(ConstantPixiv.PIXIV_ID_GET_ERROR_GROUP_MESSAGE);
+            logger.error("色图获取失败, 请联系户户");
+            return new PlainText("色图获取失败, 请联系户户");
         }
     }
 }

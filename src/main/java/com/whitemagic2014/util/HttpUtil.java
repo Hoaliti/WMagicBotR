@@ -189,8 +189,8 @@ public class HttpUtil {
     public static Proxy getProxy() {
         // 创建代理 todo 地址和端口写为配置
         Proxy proxy = null;
-        if (HttpUtil.checkProt("127.0.0.1", 31051)) {
-            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 31051));
+        if (HttpUtil.checkProt("127.0.0.1", 31057)) {
+            proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 31057));
         }
         return proxy;
     }
